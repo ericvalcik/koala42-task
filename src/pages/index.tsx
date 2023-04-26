@@ -4,5 +4,5 @@ import { useContext } from "react";
 
 export default function Home() {
   const { state, dispatch } = useContext(StateContext);
-  return <div>{state ? <Table data={state} /> : "Loading..."}</div>;
+  return <Table data={state} path="" />;
 }

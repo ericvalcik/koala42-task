@@ -4,10 +4,25 @@ import { useReducer } from "react";
 import { Table } from "@/types";
 import { initalState, StateContext } from "@/store";
 
-function reducer(state: Table, action: { type: "UPDATE"; newState: Table }) {
+function deletePropertyPath(obj: any, path: string) {
+  if (!obj || !path) {
+    return;
+  }
+  const pathArray = path.split(".");
+  for (let i = 0; i < pathArray.length - 1; i++) {
+    obj = obj[pathArray[i]];
+    if (typeof obj === "undefined") {
+      return;
+    }
+  }
+  delete obj[pathArray.pop() as string];
+}
+
+function reducer(state: Table, action: { type: "DELETE_KEY"; key: string }) {
   switch (action.type) {
-    case "UPDATE":
-      return action.newState;
+    case "DELETE_KEY":
+      deletePropertyPath(state, action.key);
+      return state;
     default:
       throw new Error();
   }
