@@ -4,7 +4,7 @@ import { useReducer } from "react";
 import { Table } from "@/types";
 import { initalState, StateContext } from "@/store";
 
-function deletePropertyPath(obj: any, path: string) {
+function deletePropertyPath(obj: any, path: string, id: string) {
   if (!obj || !path) {
     return;
   }
@@ -15,14 +15,23 @@ function deletePropertyPath(obj: any, path: string) {
       return;
     }
   }
-  delete obj[pathArray.pop() as string];
+  let newObj = obj.at(+(pathArray.at(-1) as string));
+  if (newObj && newObj["data"]["ID"] !== id) {
+    return;
+  }
+  obj.splice(+(pathArray.pop() as string), 1);
 }
 
-function reducer(state: Table, action: { type: "DELETE_KEY"; key: string }) {
+function reducer(
+  state: Table,
+  action: { type: "DELETE_KEY"; key: string; id: string }
+) {
   switch (action.type) {
     case "DELETE_KEY":
-      deletePropertyPath(state, action.key);
-      return state;
+      const newState = [...state];
+      deletePropertyPath(newState, action.key, action.id);
+      console.log(newState);
+      return newState;
     default:
       throw new Error();
   }

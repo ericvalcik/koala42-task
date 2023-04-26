@@ -1,5 +1,6 @@
 import type { Row, Table } from "@/types";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { StateContext } from "@/store";
 
 type RowProps = {
   data: Row;
@@ -7,15 +8,17 @@ type RowProps = {
 };
 
 const Row: React.FC<RowProps> = ({ data, path }) => {
+  const { dispatch } = useContext(StateContext);
   const [showChildren, setShowChildren] = useState(false);
-  if (!data.data) {
+  if (!data?.data) {
     return <></>;
   }
   return (
     <>
       <tr>
         <td>
-          {Object.keys(data.children).length !== 0 ? (
+          {Object.keys(data.children).length !== 0 &&
+          data.children[Object.keys(data.children)[0]].records.length !== 0 ? (
             <button
               onClick={() => setShowChildren(!showChildren)}
               className="px-4"
@@ -29,7 +32,15 @@ const Row: React.FC<RowProps> = ({ data, path }) => {
         {Object.keys(data.data).map((key, index) => {
           return <td key={`col-${index}`}>{data.data[key]}</td>;
         })}
-        <button>❌</button>
+        <td>
+          <button
+            onClick={() => {
+              dispatch({ type: "DELETE_KEY", key: path, id: data.data.ID });
+            }}
+          >
+            ❌
+          </button>
+        </td>
       </tr>
       {showChildren ? (
         <tr>
@@ -39,7 +50,7 @@ const Row: React.FC<RowProps> = ({ data, path }) => {
                 <Table
                   data={data.children[key].records}
                   key={`table-${index}`}
-                  path={`${path}.children.${key}`}
+                  path={`${path}.children.${key}.records`}
                 />
               );
             })}
@@ -56,7 +67,7 @@ type TableProps = {
 };
 
 const Table: React.FC<TableProps> = ({ data, path }) => {
-  return data[0] ? (
+  return data && data[0] ? (
     <table className="border border-1 border-black m-2">
       <thead>
         <tr>
@@ -69,13 +80,15 @@ const Table: React.FC<TableProps> = ({ data, path }) => {
       </thead>
       <tbody>
         {data.map((row, index) => (
-          <Row key={`row-${index}`} data={row} path={`${path}.${index}`} />
+          <Row
+            key={`row-${index}`}
+            data={row}
+            path={`${path ? `${path}.` : ""}${index}`}
+          />
         ))}
       </tbody>
     </table>
-  ) : (
-    <>empty</>
-  );
+  ) : null;
 };
 
 export default Table;
