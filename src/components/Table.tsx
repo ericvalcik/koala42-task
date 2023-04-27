@@ -18,7 +18,8 @@ const Row: React.FC<RowProps> = ({ data, path }) => {
       <tr>
         <td>
           {Object.keys(data.children).length !== 0 &&
-          data.children[Object.keys(data.children)[0]].records.length !== 0 ? (
+          data.children[Object.keys(data.children)[0]].records.filter((x) => x)
+            .length !== 0 ? (
             <button
               onClick={() => setShowChildren(!showChildren)}
               className="px-4"
@@ -35,7 +36,7 @@ const Row: React.FC<RowProps> = ({ data, path }) => {
         <td>
           <button
             onClick={() => {
-              dispatch({ type: "DELETE_KEY", key: path, id: data.data.ID });
+              dispatch({ type: "DELETE_KEY", key: path });
             }}
           >
             ❌
@@ -67,12 +68,22 @@ type TableProps = {
 };
 
 const Table: React.FC<TableProps> = ({ data, path }) => {
-  return data && data[0] ? (
+  let i = 0;
+  if (!data) {
+    return null;
+  }
+  // the first row can be deleted, find the first row that is not null or undefined
+  for (i = 0; i < data.length; i++) {
+    if (data[i]) {
+      break;
+    }
+  }
+  return data[i] ? (
     <table className="border border-1 border-black m-2">
       <thead>
         <tr>
           <th></th>
-          {Object.keys(data[0].data).map((key, index) => (
+          {Object.keys(data[i].data).map((key, index) => (
             <th key={`table-head-${key}`}>{key}</th>
           ))}
           <th>delete</th>
