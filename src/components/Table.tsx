@@ -11,7 +11,7 @@ const Row: React.FC<RowProps> = ({ data, path }) => {
   const { dispatch } = useContext(StateContext);
   const [showChildren, setShowChildren] = useState(false);
   if (!data?.data) {
-    return <></>;
+    return null;
   }
   return (
     <>
@@ -72,7 +72,7 @@ const Table: React.FC<TableProps> = ({ data, path }) => {
   if (!data) {
     return null;
   }
-  // the first row can be deleted, find the first row that is not null or undefined
+  // the first row can be deleted, find a row that is not null or undefined
   for (i = 0; i < data.length; i++) {
     if (data[i]) {
       break;

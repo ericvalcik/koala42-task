@@ -2,9 +2,38 @@ import { Table } from "@/types";
 
 import { createContext } from "react";
 
+function deletePropertyPath(obj: any, path: string) {
+  if (!obj || !path) {
+    return;
+  }
+  const pathArray = path.split(".");
+  for (let i = 0; i < pathArray.length - 1; i++) {
+    obj = obj[pathArray[i]];
+    if (typeof obj === "undefined") {
+      return;
+    }
+  }
+  delete obj[pathArray.pop() as string];
+}
+
+export function reducer(
+  state: Table,
+  action: { type: "DELETE_KEY"; key: string }
+) {
+  switch (action.type) {
+    case "DELETE_KEY":
+      const newState = [...state];
+      deletePropertyPath(newState, action.key);
+      return newState;
+    default:
+      throw new Error();
+  }
+}
+
 export const StateContext = createContext<{ state: Table; dispatch: Function }>(
-  { state: [], dispatch: () => {} }
+  { state: [], dispatch: Function }
 );
+
 export const initalState: Table = [
   {
     data: {
